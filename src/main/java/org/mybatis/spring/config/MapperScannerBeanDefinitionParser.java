@@ -32,7 +32,7 @@ import org.springframework.util.StringUtils;
 import org.w3c.dom.Element;
 
 /**
- * A {#code BeanDefinitionParser} that handles the element scan of the MyBatis. namespace
+ * 一个{#code BeanDefinitionParser}，用于处理MyBatis的元素扫描名称空间
  *
  * @author Lishu Luo
  * @author Eduardo Macarron

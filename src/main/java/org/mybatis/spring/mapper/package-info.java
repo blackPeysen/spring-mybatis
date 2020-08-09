@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Contains classes for automatically building MyBatis mapper proxy classes at application startup.
+ * 包含在应用程序启动时自动构建MyBatis映射器代理类的类。
  */
 package org.mybatis.spring.mapper;

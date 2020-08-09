@@ -34,18 +34,12 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.dao.InvalidDataAccessResourceUsageException;
 
 /**
- * {@code ItemWriter} that uses the batching features from {@code SqlSessionTemplate} to execute a batch of statements
- * for all items provided.
- * <p>
- * Provided to facilitate the migration from Spring-Batch iBATIS 2 writers to MyBatis 3.
- * <p>
- * The user must provide a MyBatis statement id that points to the SQL statement defined in the MyBatis.
- * <p>
- * It is expected that {@link #write(List)} is called inside a transaction. If it is not each statement call will be
- * autocommitted and flushStatements will return no results.
- * <p>
- * The writer is thread safe after its properties are set (normal singleton behavior), so it can be used to write in
- * multiple concurrent transactions.
+ * 使用来自{@code SqlSessionTemplate}的批处理特性来为提供的所有项目执行一批语句。
+ * 便于从spring批处理iBATIS 2写入器迁移到MyBatis 3。
+ * 用户必须提供一个MyBatis语句id，该id指向MyBatis中定义的SQL语句。
+ * 预期在事务内部调用{@link #write(List)}。
+ * 如果不是，每个语句调用将是autocommitted和flushStatements将不返回结果。
+ * 设置好属性后，写入器是线程安全的(正常的单例行为)，所以它可以用来写入多个并发事务。
  *
  * @author Eduardo Macarron
  *

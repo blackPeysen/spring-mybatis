@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 /**
- * Contains classes to builder classes for {@link org.springframework.batch.item.ItemReader} and
- * {@link org.springframework.batch.item.ItemWriter}.
+ * 包含{@link org.springframework.batch.item的构建器类。
+ * ItemReader}和{@link org.springframework.batch.item.ItemWriter}。
  *
  * @since 2.0.0
  */

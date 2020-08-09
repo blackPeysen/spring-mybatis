@@ -18,11 +18,11 @@ package org.mybatis.spring;
 import org.springframework.dao.UncategorizedDataAccessException;
 
 /**
- * MyBatis specific subclass of {@code UncategorizedDataAccessException}, for MyBatis system errors that do not match
- * any concrete {@code org.springframework.dao} exceptions.
+ * MyBatis特定的子类{@code UncategorizedDataAccessException}，
+ * 用于不匹配任何具体的{@code org.springframework.dao}例外。
  *
- * In MyBatis 3 {@code org.apache.ibatis.exceptions.PersistenceException} is a {@code RuntimeException}, but using this
- * wrapper class to bring everything under a single hierarchy will be easier for client code to handle.
+ * 在MyBatis 3中{@code org.apache.ibatis.exception。PersistenceException}是一个{@code RuntimeException}，
+ * 但是使用这个包装器类将所有东西都放在一个单一层次结构下，这样客户端代码处理起来会更容易。
  *
  * @author Hunter Presnall
  */

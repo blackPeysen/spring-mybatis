@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Contains core classes to manage MyBatis transactions in Spring3.X.
+ * 包含在Spring3.X中管理MyBatis事务的核心类。
  */
 package org.mybatis.spring.transaction;

@@ -42,36 +42,30 @@ import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
- * BeanDefinitionRegistryPostProcessor that searches recursively starting from a base package for interfaces and
- * registers them as {@code MapperFactoryBean}. Note that only interfaces with at least one method will be registered;
- * concrete classes will be ignored.
- * <p>
- * This class was a {code BeanFactoryPostProcessor} until 1.0.1 version. It changed to
- * {@code BeanDefinitionRegistryPostProcessor} in 1.0.2. See https://jira.springsource.org/browse/SPR-8269 for the
- * details.
- * <p>
- * The {@code basePackage} property can contain more than one package name, separated by either commas or semicolons.
- * <p>
- * This class supports filtering the mappers created by either specifying a marker interface or an annotation. The
- * {@code annotationClass} property specifies an annotation to search for. The {@code markerInterface} property
- * specifies a parent interface to search for. If both properties are specified, mappers are added for interfaces that
- * match <em>either</em> criteria. By default, these two properties are null, so all interfaces in the given
- * {@code basePackage} are added as mappers.
- * <p>
- * This configurer enables autowire for all the beans that it creates so that they are automatically autowired with the
- * proper {@code SqlSessionFactory} or {@code SqlSessionTemplate}. If there is more than one {@code SqlSessionFactory}
- * in the application, however, autowiring cannot be used. In this case you must explicitly specify either an
- * {@code SqlSessionFactory} or an {@code SqlSessionTemplate} to use via the <em>bean name</em> properties. Bean names
- * are used rather than actual objects because Spring does not initialize property placeholders until after this class
- * is processed.
- * <p>
- * Passing in an actual object which may require placeholders (i.e. DB user password) will fail. Using bean names defers
- * actual object creation until later in the startup process, after all placeholder substitution is completed. However,
- * note that this configurer does support property placeholders of its <em>own</em> properties. The
- * <code>basePackage</code> and bean name properties all support <code>${property}</code> style substitution.
- * <p>
- * Configuration sample:
+ * BeanDefinitionRegistryPostProcessor，从一个基本包开始递归搜索接口并将它们注册为{@code MapperFactoryBean}。
+ * 注意，只有具有至少一个方法的接口才会被注册，具体类将被忽略。
  *
+ * 这个类在1.0.1版本之前是{code BeanFactoryPostProcessor}。
+ *    在1.0.2中改为{@code BeanDefinitionRegistryPostProcessor}。
+ *    参见https://jira.springsource.org/browse/SPR-8269获得详细信息。
+ *
+ * 属性可以包含多个包名，用逗号或分号分隔。
+ * 该类支持筛选通过指定标记接口或注释创建的映射器。
+ *    属性指定要搜索的注释。
+ *    属性指定要搜索的父接口。
+ *    如果指定了这两个属性，则为匹配或条件的接口添加映射器。
+ *    默认情况下，这两个属性是null，因此给定的{@code basePackage}中的所有接口都被添加为映射器。
+ *
+ * 这个配置器为它创建的所有bean启用自动装配，这样它们就可以通过正确的{@code SqlSessionFactory}或{@code SqlSessionTemplate}自动自动装配。
+ *    但是，如果应用程序中有多个{@code SqlSessionFactory}，则不能使用自动装配。
+ *    在这种情况下，必须通过bean名属性显式指定一个{@code SqlSessionFactory}或一个{@code SqlSessionTemplate}来使用。
+ *    使用Bean名称而不是实际的对象，因为Spring在处理这个类之后才初始化属性占位符。
+ *
+ * 传入一个可能需要占位符(比如DB用户密码)的实际对象将会失败。
+ *    使用bean名称将实际的对象创建延迟到启动过程的后期，在所有占位符替换完成之后。
+ *    但是，注意，这个配置器支持其拥有属性的属性占位符。
+ *    basePackage和bean名称属性都支持${property}样式替换。
+ * Configuration sample:
  * <pre class="code">
  * {@code
  *   <bean class="org.mybatis.spring.mapper.MapperScannerConfigurer">
@@ -91,10 +85,12 @@ import org.springframework.util.StringUtils;
 public class MapperScannerConfigurer
     implements BeanDefinitionRegistryPostProcessor, InitializingBean, ApplicationContextAware, BeanNameAware {
 
+  // 搜索Mapper映射器的基本包
   private String basePackage;
 
   private boolean addToConfig = true;
 
+  // 是否懒加载
   private String lazyInitialization;
 
   private SqlSessionFactory sqlSessionFactory;
@@ -111,10 +107,13 @@ public class MapperScannerConfigurer
 
   private Class<? extends MapperFactoryBean> mapperFactoryBeanClass;
 
+  // spring 上下文
   private ApplicationContext applicationContext;
 
+  // 创建该bean的默认名称
   private String beanName;
 
+  // 是否执行属性占位符处理
   private boolean processPropertyPlaceHolders;
 
   private BeanNameGenerator nameGenerator;
@@ -122,24 +121,20 @@ public class MapperScannerConfigurer
   private String defaultScope;
 
   /**
-   * This property lets you set the base package for your mapper interface files.
-   * <p>
-   * You can set more than one package by using a semicolon or comma as a separator.
-   * <p>
-   * Mappers will be searched for recursively starting in the specified package(s).
+   * 此属性允许您为mapper接口文件设置基本包。
+   * 您可以使用分号或逗号作为分隔符来设置多个包。
+   * 从指定的包开始递归地搜索映射器。
    *
    * @param basePackage
-   *          base package name
    */
   public void setBasePackage(String basePackage) {
     this.basePackage = basePackage;
   }
 
   /**
-   * Same as {@code MapperFactoryBean#setAddToConfig(boolean)}.
+   * 与{@code MapperFactoryBean#setAddToConfig(boolean)}相同。
    *
-   * @param addToConfig
-   *          a flag that whether add mapper to MyBatis or not
+   * @param addToConfig 一个是否将mapper添加到MyBatis的标志
    * @see MapperFactoryBean#setAddToConfig(boolean)
    */
   public void setAddToConfig(boolean addToConfig) {
@@ -147,10 +142,8 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * Set whether enable lazy initialization for mapper bean.
-   * <p>
-   * Default is {@code false}.
-   * </p>
+   * 设置是否启用映射器bean的延迟初始化。
+   * 默认值是{@code false}。
    *
    * @param lazyInitialization
    *          Set the @{code true} to enable
@@ -161,43 +154,34 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * This property specifies the annotation that the scanner will search for.
-   * <p>
-   * The scanner will register all interfaces in the base package that also have the specified annotation.
-   * <p>
-   * Note this can be combined with markerInterface.
+   * 此属性指定扫描程序将搜索的注释。
+   * 扫描器将注册基包中同样具有指定注释的所有接口。
+   * 注意，这可以与markerInterface结合使用。
    *
-   * @param annotationClass
-   *          annotation class
+   * @param annotationClass 注解类
    */
   public void setAnnotationClass(Class<? extends Annotation> annotationClass) {
     this.annotationClass = annotationClass;
   }
 
   /**
-   * This property specifies the parent that the scanner will search for.
-   * <p>
-   * The scanner will register all interfaces in the base package that also have the specified interface class as a
-   * parent.
-   * <p>
-   * Note this can be combined with annotationClass.
+   * 此属性指定扫描程序将搜索的父对象。
+   * 扫描器将注册基包中同样将指定接口类作为父类的所有接口。
+   * 注意，这可以与annotationClass结合使用。
    *
-   * @param superClass
-   *          parent class
+   * @param superClass 父类
    */
   public void setMarkerInterface(Class<?> superClass) {
     this.markerInterface = superClass;
   }
 
   /**
-   * Specifies which {@code SqlSessionTemplate} to use in the case that there is more than one in the spring context.
-   * Usually this is only needed when you have more than one datasource.
-   * <p>
+   * 指定在spring上下文中有多于一个的情况下使用哪个{@code SqlSessionTemplate}。
+   * 通常只有当你有多个数据源时才需要。
+   * @deprecated 使用{@link #setSqlSessionTemplateBeanName(String)}代替
    *
-   * @deprecated Use {@link #setSqlSessionTemplateBeanName(String)} instead
+   * @param sqlSessionTemplate SqlSession的模板
    *
-   * @param sqlSessionTemplate
-   *          a template of SqlSession
    */
   @Deprecated
   public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
@@ -205,30 +189,28 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * Specifies which {@code SqlSessionTemplate} to use in the case that there is more than one in the spring context.
-   * Usually this is only needed when you have more than one datasource.
-   * <p>
-   * Note bean names are used, not bean references. This is because the scanner loads early during the start process and
-   * it is too early to build mybatis object instances.
+   * 指定在spring上下文中有多于一个的情况下使用哪个{@code SqlSessionTemplate}。
+   * 通常只有当你有多个数据源时才需要。
    *
+   * 注意，使用的是bean名称，而不是bean引用。这是因为扫描程序在启动进程的早期加载，现在构建mybatis对象实例还为时过早。
    * @since 1.1.0
    *
    * @param sqlSessionTemplateName
-   *          Bean name of the {@code SqlSessionTemplate}
+   *          {@code SqlSessionTemplate}的Bean名称
    */
   public void setSqlSessionTemplateBeanName(String sqlSessionTemplateName) {
     this.sqlSessionTemplateBeanName = sqlSessionTemplateName;
   }
 
   /**
-   * Specifies which {@code SqlSessionFactory} to use in the case that there is more than one in the spring context.
-   * Usually this is only needed when you have more than one datasource.
+   * 指定在spring上下文中有多于一个的情况下使用哪个{@code SqlSessionFactory}。
+   * 通常只有当你有多个数据源时才需要。
    * <p>
    *
-   * @deprecated Use {@link #setSqlSessionFactoryBeanName(String)} instead.
+   * @deprecated 使用{@link #setSqlSessionFactoryBeanName(String)}代替。
    *
    * @param sqlSessionFactory
-   *          a factory of SqlSession
+   *          SqlSession的工厂
    */
   @Deprecated
   public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
@@ -236,40 +218,36 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * Specifies which {@code SqlSessionFactory} to use in the case that there is more than one in the spring context.
-   * Usually this is only needed when you have more than one datasource.
-   * <p>
-   * Note bean names are used, not bean references. This is because the scanner loads early during the start process and
-   * it is too early to build mybatis object instances.
+   * 指定在spring上下文中有多于一个的情况下使用哪个{@code SqlSessionFactory}。
+   * 通常只有当你有多个数据源时才需要。
    *
+   * 注意，使用的是bean名称，而不是bean引用。这是因为扫描程序在启动进程的早期加载，现在构建mybatis对象实例还为时过早。
    * @since 1.1.0
    *
    * @param sqlSessionFactoryName
-   *          Bean name of the {@code SqlSessionFactory}
+   *          {@code SqlSessionFactory}的Bean名称
    */
   public void setSqlSessionFactoryBeanName(String sqlSessionFactoryName) {
     this.sqlSessionFactoryBeanName = sqlSessionFactoryName;
   }
 
   /**
-   * Specifies a flag that whether execute a property placeholder processing or not.
-   * <p>
-   * The default is {@literal false}. This means that a property placeholder processing does not execute.
-   *
+   * 指定是否执行属性占位符处理的标志。
+   * 默认值是{@literal false}。这意味着不执行属性占位符处理。
    * @since 1.1.1
    *
    * @param processPropertyPlaceHolders
-   *          a flag that whether execute a property placeholder processing or not
+   *         是否执行属性占位符处理的标志
    */
   public void setProcessPropertyPlaceHolders(boolean processPropertyPlaceHolders) {
     this.processPropertyPlaceHolders = processPropertyPlaceHolders;
   }
 
   /**
-   * The class of the {@link MapperFactoryBean} to return a mybatis proxy as spring bean.
+   * 返回mybatis代理作为spring bean的{@link MapperFactoryBean}的类。
    *
    * @param mapperFactoryBeanClass
-   *          The class of the MapperFactoryBean
+   *          MapperFactoryBean的类
    * @since 2.0.1
    */
   public void setMapperFactoryBeanClass(Class<? extends MapperFactoryBean> mapperFactoryBeanClass) {
@@ -277,7 +255,7 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritDoc} ApplicationContextAware 接口的实现方法
    */
   @Override
   public void setApplicationContext(ApplicationContext applicationContext) {
@@ -285,7 +263,7 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritDoc} BeanNameAware接口的实现方法
    */
   @Override
   public void setBeanName(String name) {
@@ -293,9 +271,9 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * Gets beanNameGenerator to be used while running the scanner.
+   * 获取运行扫描器时使用的beanNameGenerator。
    *
-   * @return the beanNameGenerator BeanNameGenerator that has been configured
+   * @return 已配置的beanNameGenerator
    * @since 1.2.0
    */
   public BeanNameGenerator getNameGenerator() {
@@ -303,7 +281,7 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * Sets beanNameGenerator to be used while running the scanner.
+   * 设置beanNameGenerator在运行扫描器时使用。
    *
    * @param nameGenerator
    *          the beanNameGenerator to set
@@ -314,13 +292,11 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * Sets the default scope of scanned mappers.
-   * <p>
-   * Default is {@code null} (equiv to singleton).
-   * </p>
+   * 设置扫描的映射器的默认范围。
+   * 默认为{@code null}(枚,单例).
    *
-   * @param defaultScope
-   *          the default scope
+   * @param defaultScope：默认范围
+   *
    * @since 2.0.6
    */
   public void setDefaultScope(String defaultScope) {
@@ -328,7 +304,8 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritDoc} InitializingBean 接口的具体实现
+   *  当所有属性配置后进行校验
    */
   @Override
   public void afterPropertiesSet() throws Exception {
@@ -336,7 +313,10 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritDoc} BeanFactoryPostProcessor 接口的具体实现，用于修改内部的bean工厂
+   *    在标准初始化之后修改应用程序上下文的内部bean工厂。
+   *    所有bean定义都将被加载，但是还没有实例化bean。
+   *    这允许覆盖或添加属性，甚至可以在快速初始化bean中。
    */
   @Override
   public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
@@ -344,43 +324,69 @@ public class MapperScannerConfigurer
   }
 
   /**
-   * {@inheritDoc}
-   *
+   * {@inheritDoc} BeanDefinitionRegistryPostProcessor 接口的具体实现，用于添加内部的bean定义
+   *    在标准初始化之后修改应用程序上下文的内部bean定义注册表。
+   *    所有常规bean定义都已被加载，但是还没有实例化bean。
+   *    这允许在进入下一个后处理阶段之前添加更多的bean定义。
    * @since 1.0.2
    */
   @Override
   public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
+    // 判断是否需要执行占位符处理
     if (this.processPropertyPlaceHolders) {
       processPropertyPlaceHolders();
     }
 
+    /**
+     * 声明一个ClassPathMapperScanner 包扫描器对象，用于扫描指定的basePackage属性下的文件。
+     *  继承了Spring的ClassPathBeanDefinitionScanner
+     */
     ClassPathMapperScanner scanner = new ClassPathMapperScanner(registry);
+
+    /**
+     * 根据该类的属性对scanner进行设置
+     */
     scanner.setAddToConfig(this.addToConfig);
     scanner.setAnnotationClass(this.annotationClass);
     scanner.setMarkerInterface(this.markerInterface);
+    /**
+     * 注入数据库会话工厂sqlSessionFactory 或 sqlSessionTemplate
+     */
     scanner.setSqlSessionFactory(this.sqlSessionFactory);
     scanner.setSqlSessionTemplate(this.sqlSessionTemplate);
     scanner.setSqlSessionFactoryBeanName(this.sqlSessionFactoryBeanName);
     scanner.setSqlSessionTemplateBeanName(this.sqlSessionTemplateBeanName);
+    /**
+     * 注入上下文环境applicationContext
+     */
     scanner.setResourceLoader(this.applicationContext);
+    /**
+     * 注入beanName命名策略器
+     */
     scanner.setBeanNameGenerator(this.nameGenerator);
+    /**
+     * 注入mapper对应的对象工厂
+     */
     scanner.setMapperFactoryBeanClass(this.mapperFactoryBeanClass);
+    // 是否懒加载
     if (StringUtils.hasText(lazyInitialization)) {
       scanner.setLazyInitialization(Boolean.valueOf(lazyInitialization));
     }
+    // 对象的范围
     if (StringUtils.hasText(defaultScope)) {
       scanner.setDefaultScope(defaultScope);
     }
+
     scanner.registerFilters();
+    // 对MapperScam注解的basePackage包进行扫描
     scanner.scan(
         StringUtils.tokenizeToStringArray(this.basePackage, ConfigurableApplicationContext.CONFIG_LOCATION_DELIMITERS));
   }
 
   /*
-   * BeanDefinitionRegistries are called early in application startup, before BeanFactoryPostProcessors. This means that
-   * PropertyResourceConfigurers will not have been loaded and any property substitution of this class' properties will
-   * fail. To avoid this, find any PropertyResourceConfigurers defined in the context and run them on this class' bean
-   * definition. Then update the values.
+   * BeanDefinitionRegistries在应用程序启动的早期调用，在BeanFactoryPostProcessors之前。
+   * 这意味着PropertyResourceConfigurers将不会被加载，并且该类属性的任何属性替换将失败。
+   * 为了避免这种情况，找到上下文中定义的所有PropertyResourceConfigurers，并在这个类的bean定义上运行它们。然后更新值。
    */
   private void processPropertyPlaceHolders() {
     Map<String, PropertyResourceConfigurer> prcs = applicationContext.getBeansOfType(PropertyResourceConfigurer.class,
@@ -390,9 +396,9 @@ public class MapperScannerConfigurer
       BeanDefinition mapperScannerBean = ((ConfigurableApplicationContext) applicationContext).getBeanFactory()
           .getBeanDefinition(beanName);
 
-      // PropertyResourceConfigurer does not expose any methods to explicitly perform
-      // property placeholder substitution. Instead, create a BeanFactory that just
-      // contains this mapper scanner and post process the factory.
+      // PropertyResourceConfigurer不公开显式执行
+      // 属性占位符替换的任何方法。
+      // 相反，创建一个仅包含此映射器扫描器的BeanFactory并post处理该工厂。
       DefaultListableBeanFactory factory = new DefaultListableBeanFactory();
       factory.registerBeanDefinition(beanName, mapperScannerBean);
 

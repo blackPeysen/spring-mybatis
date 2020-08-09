@@ -20,7 +20,7 @@ import java.util.function.Supplier;
 import org.apache.ibatis.logging.Log;
 
 /**
- * Wrapper of {@link Log}, allow log with lambda expressions.
+ * 封装{@link Log}，允许使用lambda表达式进行日志。
  *
  * @author Putthiphong Boonphong
  */

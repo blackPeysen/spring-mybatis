@@ -33,8 +33,9 @@ import org.springframework.transaction.support.TransactionSynchronizationAdapter
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 /**
- * Handles MyBatis SqlSession life cycle. It can register and get SqlSessions from Spring
- * {@code TransactionSynchronizationManager}. Also works if no transaction is active.
+ * 处理MyBatis SqlSession生命周期。
+ * 它可以从Spring {@code TransactionSynchronizationManager}注册和获取SqlSessions。
+ * 如果没有活动的事务也可以工作。
  *
  * @author Hunter Presnall
  * @author Eduardo Macarron
@@ -48,19 +49,17 @@ public final class SqlSessionUtils {
   private static final String NO_SQL_SESSION_SPECIFIED = "No SqlSession specified";
 
   /**
-   * This class can't be instantiated, exposes static utility methods only.
+   * 该类不能实例化，只公开静态实用程序方法。
    */
   private SqlSessionUtils() {
     // do nothing
   }
 
   /**
-   * Creates a new MyBatis {@code SqlSession} from the {@code SqlSessionFactory} provided as a parameter and using its
-   * {@code DataSource} and {@code ExecutorType}
+   * 从作为参数提供的{@code SqlSessionFactory}并使用其{@code DataSource}和{@code ExecutorType}创建新的MyBatis {@code SqlSession}
    *
-   * @param sessionFactory
-   *          a MyBatis {@code SqlSessionFactory} to create new sessions
-   * @return a MyBatis {@code SqlSession}
+   * @param sessionFactory：创建新会话的MyBatis {@code SqlSessionFactory}
+   * @return a MyBatis (@code SqlSession)
    * @throws TransientDataAccessResourceException
    *           if a transaction is active and the {@code SqlSessionFactory} is not using a
    *           {@code SpringManagedTransactionFactory}

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Contains Spring3.X support classes for MyBatis.
+ * 包含Spring3 支持MyBatis的类。
  */
 package org.mybatis.spring.support;

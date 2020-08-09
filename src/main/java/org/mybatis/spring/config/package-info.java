@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Contains the MyBatis namespace schema and element handlers.
+ * 包含MyBatis名称空间模式和元素处理程序。
  */
 package org.mybatis.spring.config;

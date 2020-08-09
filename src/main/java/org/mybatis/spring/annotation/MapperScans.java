@@ -24,12 +24,10 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Import;
 
 /**
- * The Container annotation that aggregates several {@link MapperScan} annotations.
- *
+ * 聚合了几个{@link MapperScan}注释的容器注释。
  * <p>
- * Can be used natively, declaring several nested {@link MapperScan} annotations. Can also be used in conjunction with
- * Java 8's support for repeatable annotations, where {@link MapperScan} can simply be declared several times on the
- * same method, implicitly generating this container annotation.
+ * 可以本地使用，声明几个嵌套的{@link MapperScan}注释。
+ * 也可以与Java 8对可重复注释的支持一起使用，其中{@link MapperScan}可以简单地在同一个方法上声明几次，隐式地生成这个容器注释。
  *
  * @author Kazuki Shimizu
  * @since 2.0.0

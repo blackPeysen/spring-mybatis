@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 /**
- * Contains MyBatis annotations
+ * 包含MyBatis注释
  */
 package org.mybatis.spring.annotation;

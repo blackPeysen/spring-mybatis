@@ -30,18 +30,13 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.context.annotation.Import;
 
 /**
- * Use this annotation to register MyBatis mapper interfaces when using Java Config. It performs when same work as
- * {@link MapperScannerConfigurer} via {@link MapperScannerRegistrar}.
+ * 在使用Java配置时，使用这个注释来注册MyBatis映射器接口。
+ * 它在与{@link MapperScannerConfigurer}通过{@link MapperScannerRegistrar}执行相同的工作时执行。
  *
- * <p>
- * Either {@link #basePackageClasses} or {@link #basePackages} (or its alias {@link #value}) may be specified to define
- * specific packages to scan. Since 2.0.4, If specific packages are not defined, scanning will occur from the package of
- * the class that declares this annotation.
+ * 可以指定{@link #basePackageClasses}或{@link #basePackages}(或其别名{@link #value})来定义要扫描的特定包。
+ * 从2.0.4开始，如果没有定义特定的包，那么扫描将从声明这个注释的类的包中进行。
  *
- * <p>
- * Configuration example:
- * </p>
- *
+ * 配置的例子:
  * <pre class="code">
  * &#064;Configuration
  * &#064;MapperScan("org.mybatis.spring.sample.mapper")
@@ -81,105 +76,92 @@ import org.springframework.context.annotation.Import;
 public @interface MapperScan {
 
   /**
-   * Alias for the {@link #basePackages()} attribute. Allows for more concise annotation declarations e.g.:
-   * {@code @MapperScan("org.my.pkg")} instead of {@code @MapperScan(basePackages = "org.my.pkg"})}.
+   * {@link #basePackages()}属性的别名。
+   * 允许更简洁的注释声明，例如:{@code @MapperScan("org.my.pkg")}，而不是{@code @MapperScan(basePackages = "org.my.pkg"})}。
    *
-   * @return base package names
+   * @return 基本包名
    */
   String[] value() default {};
 
   /**
-   * Base packages to scan for MyBatis interfaces. Note that only interfaces with at least one method will be
-   * registered; concrete classes will be ignored.
+   * 扫描MyBatis接口的基本包。
+   * 注意，只有具有至少一个方法的接口才会注册，具体类将被忽略。
    *
-   * @return base package names for scanning mapper interface
+   * @return 用于扫描映射器接口的基本包名称
    */
   String[] basePackages() default {};
 
   /**
-   * Type-safe alternative to {@link #basePackages()} for specifying the packages to scan for annotated components. The
-   * package of each class specified will be scanned.
-   * <p>
-   * Consider creating a special no-op marker class or interface in each package that serves no purpose other than being
-   * referenced by this attribute.
+   * 类型安全的{@link #basePackages()}的替代方案，用于指定要扫描的包以寻找带注释的组件。
+   * 每个指定类别的包将被扫描。
+   * 考虑在每个包中创建一个特殊的no-op标记类或接口，它除了被这个属性引用之外没有其他用途。
    *
-   * @return classes that indicate base package for scanning mapper interface
+   * @return 指明扫描映射器接口的基包的类
    */
   Class<?>[] basePackageClasses() default {};
 
   /**
-   * The {@link BeanNameGenerator} class to be used for naming detected components within the Spring container.
+   * 用于命名Spring容器中检测到的组件的{@link BeanNameGenerator}类。
    *
-   * @return the class of {@link BeanNameGenerator}
+   * @return {@link BeanNameGenerator}的类
    */
   Class<? extends BeanNameGenerator> nameGenerator() default BeanNameGenerator.class;
 
   /**
-   * This property specifies the annotation that the scanner will search for.
-   * <p>
-   * The scanner will register all interfaces in the base package that also have the specified annotation.
-   * <p>
-   * Note this can be combined with markerInterface.
+   * 此属性指定扫描程序将搜索的注释。
+   * 扫描器将注册基包中同样具有指定注释的所有接口。
+   * 注意，这可以与markerInterface结合使用。
    *
-   * @return the annotation that the scanner will search for
+   * @return 扫描器要搜索的注释
    */
   Class<? extends Annotation> annotationClass() default Annotation.class;
 
   /**
-   * This property specifies the parent that the scanner will search for.
-   * <p>
-   * The scanner will register all interfaces in the base package that also have the specified interface class as a
-   * parent.
-   * <p>
-   * Note this can be combined with annotationClass.
+   * 此属性指定扫描程序将搜索的父对象。
+   * 扫描器将注册基包中同样将指定接口类作为父类的所有接口。
+   * 注意，这可以与annotationClass结合使用。
    *
-   * @return the parent that the scanner will search for
+   * @return 扫描器将搜索的父元素
    */
   Class<?> markerInterface() default Class.class;
 
   /**
-   * Specifies which {@code SqlSessionTemplate} to use in the case that there is more than one in the spring context.
-   * Usually this is only needed when you have more than one datasource.
+   * 指定在spring上下文中有多于一个的情况下使用哪个{@code SqlSessionTemplate}。
+   * 通常只有当你有多个数据源时才需要。
    *
-   * @return the bean name of {@code SqlSessionTemplate}
+   * @return {@code SqlSessionTemplate}的bean名
    */
   String sqlSessionTemplateRef() default "";
 
   /**
-   * Specifies which {@code SqlSessionFactory} to use in the case that there is more than one in the spring context.
-   * Usually this is only needed when you have more than one datasource.
+   * 指定在spring上下文中有多于一个的情况下使用哪个{@code SqlSessionFactory}。
+   * 通常只有当你有多个数据源时才需要。
    *
-   * @return the bean name of {@code SqlSessionFactory}
+   * @return {@code SqlSessionFactory}的bean名
    */
   String sqlSessionFactoryRef() default "";
 
   /**
-   * Specifies a custom MapperFactoryBean to return a mybatis proxy as spring bean.
+   * 指定一个自定义MapperFactoryBean来返回一个mybatis代理作为spring bean。
    *
    * @return the class of {@code MapperFactoryBean}
    */
   Class<? extends MapperFactoryBean> factoryBean() default MapperFactoryBean.class;
 
   /**
-   * Whether enable lazy initialization of mapper bean.
+   * 是否启用映射器bean的延迟初始化。
+   * 默认值是{@code false}。
    *
-   * <p>
-   * Default is {@code false}.
-   * </p>
-   *
-   * @return set {@code true} to enable lazy initialization
+   * @return 设置{@code true}启用延迟初始化
    * @since 2.0.2
    */
   String lazyInitialization() default "";
 
   /**
-   * Specifies the default scope of scanned mappers.
+   * 指定扫描映射器的默认范围。
+   * 默认是{@code ""}  (equiv to singleton).
    *
-   * <p>
-   * Default is {@code ""} (equiv to singleton).
-   * </p>
-   *
-   * @return the default scope
+   * @return 默认范围
    */
   String defaultScope() default AbstractBeanDefinition.SCOPE_DEFAULT;
 

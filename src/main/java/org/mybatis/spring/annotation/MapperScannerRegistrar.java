@@ -38,9 +38,10 @@ import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link ImportBeanDefinitionRegistrar} to allow annotation configuration of MyBatis mapper scanning. Using
- * an @Enable annotation allows beans to be registered via @Component configuration, whereas implementing
- * {@code BeanDefinitionRegistryPostProcessor} will work for XML configuration.
+ * 用于解析@MapperScan注解，主要是注册一个MapperScannerConfigurer的BeanDefinition对象
+ * 一个{@link ImportBeanDefinitionRegistrar}允许MyBatis映射器扫描的注释配置。
+ * 使用一个@Enable注释允许通过@Component配置注册bean，
+ * 而实现{@code BeanDefinitionRegistryPostProcessor}将适用于XML配置。
  *
  * @author Michael Lanyon
  * @author Eduardo Macarron
@@ -54,8 +55,7 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
 
   /**
    * {@inheritDoc}
-   *
-   * @deprecated Since 2.0.2, this method not used never.
+   * @deprecated Since 2.0.2, 这种方法从未被使用过。
    */
   @Override
   @Deprecated
@@ -64,24 +64,50 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritDoc} 获取@MapperScan 注解的元信息，然后进行注册mapper对应的beanDefinition对象
+   * @param importingClassMetadata: 是指加了@MapperScan注解的类元信息，比如引导类
+   * @param registry: 注册器
    */
   @Override
   public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
+    /**
+     * 从类元信息上获取@MapperScan的注解信息，并转换为AnnotationAttributes对象
+     */
     AnnotationAttributes mapperScanAttrs = AnnotationAttributes
         .fromMap(importingClassMetadata.getAnnotationAttributes(MapperScan.class.getName()));
+
     if (mapperScanAttrs != null) {
+      /**
+       * 根据@MapperScan的注解信息，注册一个BeanDefinition
+       */
       registerBeanDefinitions(importingClassMetadata, mapperScanAttrs, registry,
           generateBaseBeanName(importingClassMetadata, 0));
     }
   }
 
+  /**
+   * 获取@MapperScan注解的属性值，然后传递给MapperScannerConfigurer，最后对MapperScannerConfigurer进行注册
+   *    获取xxxMapper.java，并注册，
+   *    解析xxxMapper.xml是由SqlSessionFactroyBean执行
+   * @param annoMeta
+   * @param annoAttrs
+   * @param registry
+   * @param beanName
+   */
   void registerBeanDefinitions(AnnotationMetadata annoMeta, AnnotationAttributes annoAttrs,
       BeanDefinitionRegistry registry, String beanName) {
 
+    /**
+     * 创建bean定义构建器，通过构建器来创建出我们的bean定义《MapperScannerConfigurer》，应用到【建造者模式】
+     * 构建一个包含MapperScannerConfigurer对象的构建器：
+     *    目的的是生成一个MapperScannerConfigurer的BeanDefinition对象
+     */
     BeanDefinitionBuilder builder = BeanDefinitionBuilder.genericBeanDefinition(MapperScannerConfigurer.class);
     builder.addPropertyValue("processPropertyPlaceHolders", true);
 
+    /**
+     * 获取 @MapperScan 注解上的属性值
+     */
     Class<? extends Annotation> annotationClass = annoAttrs.getClass("annotationClass");
     if (!Annotation.class.equals(annotationClass)) {
       builder.addPropertyValue("annotationClass", annotationClass);
@@ -138,20 +164,35 @@ public class MapperScannerRegistrar implements ImportBeanDefinitionRegistrar, Re
 
     builder.addPropertyValue("basePackage", StringUtils.collectionToCommaDelimitedString(basePackages));
 
+    /**
+     * 在注册前给该BeanDefinition的各属性进行填充
+     * 使用默认的注册器DefaultListableBeanFactory注册该BeanDefinition
+     */
     registry.registerBeanDefinition(beanName, builder.getBeanDefinition());
 
   }
 
+  /**
+   * 获取类的基本命名
+   * @param importingClassMetadata
+   * @param index
+   * @return
+   */
   private static String generateBaseBeanName(AnnotationMetadata importingClassMetadata, int index) {
     return importingClassMetadata.getClassName() + "#" + MapperScannerRegistrar.class.getSimpleName() + "#" + index;
   }
 
+  /**
+   * 如果@MapperScan没有指定扫描包，则默认使用最顶层包作为扫描基本包
+   * @param importingClassMetadata
+   * @return
+   */
   private static String getDefaultBasePackage(AnnotationMetadata importingClassMetadata) {
     return ClassUtils.getPackageName(importingClassMetadata.getClassName());
   }
 
   /**
-   * A {@link MapperScannerRegistrar} for {@link MapperScans}.
+   * 一个{@link MapperScannerRegistrar}用于{@link MapperScans}。
    *
    * @since 2.0.0
    */

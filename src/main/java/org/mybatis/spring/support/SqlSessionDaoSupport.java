@@ -23,11 +23,10 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.dao.support.DaoSupport;
 
 /**
- * Convenient super class for MyBatis SqlSession data access objects. It gives you access to the template which can then
- * be used to execute SQL methods.
- * <p>
- * This class needs a SqlSessionTemplate or a SqlSessionFactory. If both are set the SqlSessionFactory will be ignored.
- * <p>
+ * MyBatis SqlSession数据访问对象的方便超类。
+ * 它允许您访问模板，然后使用该模板执行SQL方法。
+ * 这个类需要一个SqlSessionTemplate或SqlSessionFactory。
+ * 如果两者都设置了，那么SqlSessionFactory将被忽略。
  *
  * @author Putthiphong Boonphong
  * @author Eduardo Macarron
@@ -41,11 +40,10 @@ public abstract class SqlSessionDaoSupport extends DaoSupport {
   private SqlSessionTemplate sqlSessionTemplate;
 
   /**
-   * Set MyBatis SqlSessionFactory to be used by this DAO. Will automatically create SqlSessionTemplate for the given
-   * SqlSessionFactory.
+   * 将MyBatis SqlSessionFactory设置为由这个DAO使用。
+   * 将为给定的SqlSessionFactory自动创建SqlSessionTemplate。
    *
-   * @param sqlSessionFactory
-   *          a factory of SqlSession
+   * @param sqlSessionFactory：SqlSession的工厂
    */
   public void setSqlSessionFactory(SqlSessionFactory sqlSessionFactory) {
     if (this.sqlSessionTemplate == null || sqlSessionFactory != this.sqlSessionTemplate.getSqlSessionFactory()) {
@@ -54,15 +52,13 @@ public abstract class SqlSessionDaoSupport extends DaoSupport {
   }
 
   /**
-   * Create a SqlSessionTemplate for the given SqlSessionFactory. Only invoked if populating the DAO with a
-   * SqlSessionFactory reference!
-   * <p>
-   * Can be overridden in subclasses to provide a SqlSessionTemplate instance with different configuration, or a custom
-   * SqlSessionTemplate subclass.
+   * 为给定的SqlSessionFactory创建一个SqlSessionTemplate。
+   * 只有在使用SqlSessionFactory引用填充DAO时才调用!
+   * 可以在子类中重写，以提供具有不同配置的SqlSessionTemplate实例，或自定义的SqlSessionTemplate子类。
    *
    * @param sqlSessionFactory
-   *          the MyBatis SqlSessionFactory to create a SqlSessionTemplate for
-   * @return the new SqlSessionTemplate instance
+   *          MyBatis SqlSessionFactory用于创建SqlSessionTemplate
+   * @return 新的SqlSessionTemplate实例
    * @see #setSqlSessionFactory
    */
   @SuppressWarnings("WeakerAccess")
@@ -71,19 +67,17 @@ public abstract class SqlSessionDaoSupport extends DaoSupport {
   }
 
   /**
-   * Return the MyBatis SqlSessionFactory used by this DAO.
-   *
-   * @return a factory of SqlSession
+   * 返回此DAO使用的MyBatis SqlSessionFactory。
+   * @return SqlSession的工厂
    */
   public final SqlSessionFactory getSqlSessionFactory() {
     return (this.sqlSessionTemplate != null ? this.sqlSessionTemplate.getSqlSessionFactory() : null);
   }
 
   /**
-   * Set the SqlSessionTemplate for this DAO explicitly, as an alternative to specifying a SqlSessionFactory.
+   * 显式地为这个DAO设置SqlSessionTemplate，作为指定SqlSessionFactory的替代方法。
    *
-   * @param sqlSessionTemplate
-   *          a template of SqlSession
+   * @param sqlSessionTemplate：SqlSession的模板
    * @see #setSqlSessionFactory
    */
   public void setSqlSessionTemplate(SqlSessionTemplate sqlSessionTemplate) {
@@ -91,31 +85,30 @@ public abstract class SqlSessionDaoSupport extends DaoSupport {
   }
 
   /**
-   * Users should use this method to get a SqlSession to call its statement methods This is SqlSession is managed by
-   * spring. Users should not commit/rollback/close it because it will be automatically done.
+   * 用户应该使用这个方法来获取一个SqlSession来调用它的语句方法，因为SqlSession是由spring管理的。
+   * 用户不应该提交/回滚/关闭它，因为它将自动完成。
    *
-   * @return Spring managed thread safe SqlSession
+   * @return 管理线程安全的SqlSession
    */
   public SqlSession getSqlSession() {
     return this.sqlSessionTemplate;
   }
 
   /**
-   * Return the SqlSessionTemplate for this DAO, pre-initialized with the SessionFactory or set explicitly.
-   * <p>
-   * <b>Note: The returned SqlSessionTemplate is a shared instance.</b> You may introspect its configuration, but not
-   * modify the configuration (other than from within an {@link #initDao} implementation). Consider creating a custom
-   * SqlSessionTemplate instance via {@code new SqlSessionTemplate(getSqlSessionFactory())}, in which case you're
-   * allowed to customize the settings on the resulting instance.
+   * 返回此DAO的SqlSessionTemplate，使用SessionFactory预初始化或显式设置。
+   * <b>注意:返回的SqlSessionTemplate是一个共享实例。
+   * 您可以内省它的配置，但不能修改配置(除了在{@link #initDao}实现中)。
+   * 考虑通过{@code new SqlSessionTemplate(getSqlSessionFactory())}创建一个定制的 SqlSessionTemplate实例，
+   * 在这种情况下，允许您定制结果实例上的设置。
    *
-   * @return a template of SqlSession
+   * @return SqlSession的模板
    */
   public SqlSessionTemplate getSqlSessionTemplate() {
     return this.sqlSessionTemplate;
   }
 
   /**
-   * {@inheritDoc}
+   * {@inheritDoc} 检查sqlSessionTemplate属性不为空
    */
   @Override
   protected void checkDaoConfig() {
